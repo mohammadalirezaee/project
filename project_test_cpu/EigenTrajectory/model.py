@@ -92,9 +92,12 @@ class EigenTrajectory(nn.Module):
         obs_ori -= obs_ori.mean(dim=1, keepdim=True)  # move scene to origin
         lis = []
         print(f'C_observation(input to GCN): {C_obs.shape}')
+        print(f'C_observation(input to GCN): {features.shape}')
 
         features = self.Scene_features.forward(addl_info)#new add
-        increased_C = torch.cat((C_obs, features), dim=0)
+        con = [torch.cat([features, c], dim=0) for c in torch.transpose(C_obs, 0, 1)]
+        increased_C = torch.stack(con, dim=1)
+        
         # print(f'obs_ori(input to GCN): {obs_ori}')
         # Trajectory prediction
 

@@ -8,17 +8,19 @@ class modified_UNet(nn.Module):
         super().__init__()
 
         # Encoder
-        # input: 224*224
-        self.e11 = nn.Conv2d(3, 32, kernel_size=3, padding=1)
-        self.e12 = nn.Conv2d(32, 32, kernel_size=3, padding=1)
+        self.e11 = nn.Conv2d(3, 32, kernel_size=3, padding=0)
+        self.e12 = nn.Conv2d(32, 32, kernel_size=3, padding=0)
         self.pool1 = nn.MaxPool2d(kernel_size=2, stride=2)
 
-        self.e41 = nn.Conv2d(32, 64, kernel_size=3, padding=1)
-        self.e42 = nn.Conv2d(64, 64, kernel_size=3, padding=1)
+        self.e41 = nn.Conv2d(32, 64, kernel_size=3, padding=0)
+        self.e42 = nn.Conv2d(64, 64, kernel_size=3, padding=0)
         self.pool4 = nn.MaxPool2d(kernel_size=2, stride=2)
 
-        self.e51 = nn.Conv2d(64, 128, kernel_size=3, padding=1)
-        self.e52 = nn.Conv2d(128, 128, kernel_size=3, padding=1)
+        self.e51 = nn.Conv2d(64, 128, kernel_size=3, padding=0)
+        self.e52 = nn.Conv2d(128, 128, kernel_size=3, padding=0)
+
+        # Global Average Pooling
+        self.global_avg_pool = nn.AdaptiveAvgPool2d((1, 1))
 
     def forward(self, frames):
         # Encoder
@@ -34,7 +36,12 @@ class modified_UNet(nn.Module):
 
             xe51 = relu(self.e51(xp4))
             xe52 = relu(self.e52(xe51))
-            outputs.append(xe52)
+
+            # Global Average Pooling and Flatten
+            pooled = self.global_avg_pool(xe52)
+            flattened = pooled.view(pooled.size(0), -1)
+
+            outputs.append(flattened)
 
         # Average the results
         avg_output = torch.stack(outputs).mean(0)
