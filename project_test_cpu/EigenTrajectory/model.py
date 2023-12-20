@@ -94,14 +94,14 @@ class EigenTrajectory(nn.Module):
         print(f'C_observation(input to GCN): {C_obs.shape}')
         print(f'C_observation(input to GCN): {features.shape}')
 
-        features = self.Scene_features.forward(addl_info)#new add
+        features = self.Scene_features.forward(addl_info).squeeze(0) #new add
         con = [torch.cat([features, c], dim=0) for c in torch.transpose(C_obs, 0, 1)]
         increased_C = torch.stack(con, dim=1)
         
         # print(f'obs_ori(input to GCN): {obs_ori}')
         # Trajectory prediction
 
-        input_data = self.hook_func.model_forward_pre_hook(increased_C, obs_ori)
+        input_data = self.model_forward_prehook_func_hook(increased_C, obs_ori)
         output_data = self.hook_func.model_forward(input_data, self.baseline_model)
         C_pred_refine = self.hook_func.model_forward_post_hook(output_data)
         lis.append(C_pred_refine)
