@@ -24,7 +24,8 @@ def get_dataloader(data_dir, phase, obs_len, pred_len, batch_size):
     """
 
     assert phase in ['train', 'val', 'test']
-
+    
+    
     data_set = data_dir + '/' + phase + '/'
     shuffle = True if phase == 'train' else False
     drop_last = True if phase == 'train' else False
@@ -186,6 +187,7 @@ class TrajectoryDataset(Dataset):
         self.seq_len = self.obs_len + self.pred_len
         self.delim = delim
         self.frame_path = frame_path
+        self.video_path = os.path.join(self.frame_path, 'seq_hotel.avi')
 
         all_files = os.listdir(self.data_dir)
         all_files = [os.path.join(self.data_dir, _path) for _path in all_files]
@@ -241,23 +243,8 @@ class TrajectoryDataset(Dataset):
                     frame_id.append(frame_range) #new add
                     pedestrain_id.append(ped_list) #new add
                     
-            
-            cap = cv2.VideoCapture(self.frame_path + '/seq_hotel.avi')
-            frame_lists = [(row.min() , row.max())  for row in frame_id] #new add
-            images_list = []
-            for tup in frame_lists:
-                temp_list = []
-                current_frame_number = tup[0]
-                for i in range(obs_len):
-                    cap.set(cv2.CAP_PROP_POS_FRAMES, current_frame_number)
-                    ret, current_frame = cap.read()
-                    frame = prepare_image(current_frame).to(device)
-                    temp_list.append(frame)
-                    current_frame_number+=10
-                images_list.append(temp_list)
-            
- 
-        self.images = images_list
+
+        self.frame_lists = [(row.min(), row.max()) for row in frame_id]
         self.num_seq = len(seq_list)
         seq_list = np.concatenate(seq_list, axis=0)
         loss_mask_list = np.concatenate(loss_mask_list, axis=0)
@@ -276,10 +263,27 @@ class TrajectoryDataset(Dataset):
 
     def __len__(self):
         return self.num_seq
+    
+    def extract_frames(self, video_path, min_frame, max_frame, obs_len):
+        images_list = []
+        cap =  cv2.VideoCapture(video_path) 
+        temp_list = []
+        current_frame_number = min_frame
+        for _ in range(obs_len):
+            cap.set(cv2.CAP_PROP_POS_FRAMES, current_frame_number)
+            ret, current_frame = cap.read()
+            if not ret:
+                raise RuntimeError(f"Could not read frame {current_frame_number} from {video_path}")
+            frame = prepare_image(current_frame).to(device)
+            temp_list.append(frame)
+            current_frame_number += 10
+        images_list.append(temp_list)
+        return images_list
 
     def __getitem__(self, index):
         start, end = self.seq_start_end[index]
-        
+        min_frame, max_frame= self.frame_lists[index]
+        frames = self.extract_frames(self.video_path, min_frame, max_frame, self.obs_len)
         out = [self.obs_traj[start:end], self.pred_traj[start:end],
-               self.non_linear_ped[start:end], self.loss_mask[start:end], [[0, end - start]], self.images[index]]
+               self.non_linear_ped[start:end], self.loss_mask[start:end], [[0, end - start]], frames]
         return out 
