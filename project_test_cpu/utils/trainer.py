@@ -125,7 +125,7 @@ class ETSequencedMiniBatchTrainer(ETTrainer):
         for cnt, batch in enumerate(tqdm(self.loader_train, desc=f'Train Epoch {epoch}', mininterval=1)):
             device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
             obs_traj, pred_traj = [tensor.to(device, non_blocking=True) for tensor in batch[:2]]
-            frames = [tensor.to(device, non_blocking=True) for tensor in batch[-1][0]]
+            frames = [[tensor.to(device, non_blocking=True) for tensor in sublist] for sublist in batch[-1][0]]
 
             self.optimizer.zero_grad()
 
@@ -217,9 +217,12 @@ class ETCollatedMiniBatchTrainer(ETTrainer):
         loss_batch = 0
 
         for cnt, batch in enumerate(tqdm(self.loader_train, desc=f'Train Epoch {epoch}', mininterval=1)):
+            device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
             obs_traj, pred_traj = [tensor.cuda(non_blocking=True) for tensor in batch[:2]]
-            frames = [tensor.cuda(non_blocking=True) for tensor in batch[-1]]
+            # frames = [[tensor.to(device, non_blocking=True) for tensor in sublist] for sublist in batch[-1][0]]
+            # frames = [tensor.cuda(non_blocking=True) for tensor in batch[-1]]
 
+        
             self.optimizer.zero_grad()
 
             output = self.model(obs_traj, pred_traj)

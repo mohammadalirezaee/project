@@ -75,7 +75,7 @@ class st_gcn(nn.Module):
         assert kernel_size[0] % 2 == 1
         padding = ((kernel_size[0] - 1) // 2, 0)
         self.use_mdn = use_mdn
-
+        # self.in_channels = in_channels
         self.gcn = ConvTemporalGraphical(in_channels, out_channels, kernel_size[1])
 
         self.tcn = nn.Sequential(nn.BatchNorm2d(out_channels),
@@ -144,5 +144,4 @@ class social_stgcnn(nn.Module):
         v = v.view(v.shape[0], v.shape[2], v.shape[1], v.shape[3])
 
         return v
-
 
