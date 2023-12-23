@@ -24,10 +24,13 @@ def model_forward_pre_hook(obs_data, obs_ori, addl_info=None):
     # Pre-process input data for the baseline model
     if obs_ori is not None:
         obs_data = torch.cat([obs_data, obs_ori], dim=0)
-    print(f'obs_data_forward: {obs_data.shape}')
-    v = obs_data[None, :, :, None].detach()
-    v = v.permute(0, 3, 1, 2)
-    a = generate_adjacency_matrix(v).squeeze(dim=0).detach()
+    # print(f'obs_data_forward: {obs_data.shape}')
+    features = addl_info
+    con = [torch.cat([features, c], dim=0) for c in torch.transpose(obs_data, 0, 1)]
+    increased_obs_data = torch.stack(con, dim=1)
+    v = increased_obs_data[None, :, :, None].detach()
+    v = v.permute(0, 3, 1, 2)# v = torch.Size([1, 1, 8, 3])
+    a = generate_adjacency_matrix(v).squeeze(dim=0).detach()# a = (8,3,3) 
     input_data = (v, a)
     return input_data
 
