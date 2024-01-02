@@ -94,12 +94,12 @@ class EigenTrajectory(nn.Module):
         print(f'C_observation(input to GCN): {C_obs.shape}')
         # print(f'C_observation(input to GCN): {features.shape}')
         print('******************')
-        print(type(addl_info))
-        print(len(addl_info))
+        # print(type(addl_info))
+        # print(len(addl_info))
         # print(addl_info[0].shape)
         # print(addl_info[7].shape)
         features = self.Scene_features.forward(addl_info[0]).squeeze(0) #new add
-        print(f'features: {features.shape}')
+        # print(f'features: {features.shape}')
         # con = [torch.cat([features, c], dim=0) for c in torch.transpose(C_obs, 0, 1)]
         # increased_C = torch.stack(con, dim=1)
         # print(f'increased_C: {increased_C.shape}')
@@ -107,8 +107,14 @@ class EigenTrajectory(nn.Module):
         # print(f'obs_ori(input to GCN): {obs_ori}')
         # Trajectory prediction
 
-        input_data = self.hook_func.model_forward_pre_hook(C_obs, obs_ori , addl_info = features )
-        output_data = self.hook_func.model_forward(input_data, self.baseline_model)
+        input_data = self.hook_func.model_forward_pre_hook(C_obs, obs_ori)
+
+        # v = input_data[0]
+        # a = input_data[1]
+        # print(f'a: {a.shape}') # torch.Size([8, 3, 3])
+        # print(f'v: {v.shape}') #  torch.Size([1, 1, 8, 3])
+
+        output_data = self.hook_func.model_forward(input_data, self.baseline_model , addl_info=features)
         C_pred_refine = self.hook_func.model_forward_post_hook(output_data)
         lis.append(C_pred_refine)
         # print(len(lis))
@@ -143,3 +149,5 @@ class EigenTrajectory(nn.Module):
             output["loss_euclidean_fde"] = error_displacement[:, :, -1].min(dim=0)[0].mean()
 
         return output 
+
+

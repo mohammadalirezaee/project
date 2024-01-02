@@ -20,24 +20,37 @@ def generate_adjacency_matrix(v, mask=None):
     return torch.eye(n=n_ped, device=v.device) - norm_degs_matrix @ a_hat @ norm_degs_matrix
 
 
+# def model_forward_pre_hook(obs_data, obs_ori, addl_info=None):
+#     # Pre-process input data for the baseline model
+#     if obs_ori is not None:
+#         obs_data = torch.cat([obs_data, obs_ori], dim=0)
+#     # print(f'obs_data_forward: {obs_data.shape}')
+#     features = addl_info
+#     con = [torch.cat([features, c], dim=0) for c in torch.transpose(obs_data, 0, 1)]
+#     increased_obs_data = torch.stack(con, dim=1)
+#     v = increased_obs_data[None, :, :, None].detach()
+#     v = v.permute(0, 3, 1, 2)# v = torch.Size([1, 1, 8, 3])
+#     a = generate_adjacency_matrix(v).squeeze(dim=0).detach()# a = (8,3,3) 
+#     input_data = (v, a)
+#     return input_data
+
+
 def model_forward_pre_hook(obs_data, obs_ori, addl_info=None):
     # Pre-process input data for the baseline model
     if obs_ori is not None:
-        obs_data = torch.cat([obs_data, obs_ori], dim=0)
+        obs_data = torch.cat([obs_data, obs_ori], dim=0) # obs_data_forward =>torch.Size([8, 3])
     # print(f'obs_data_forward: {obs_data.shape}')
-    features = addl_info
-    con = [torch.cat([features, c], dim=0) for c in torch.transpose(obs_data, 0, 1)]
-    increased_obs_data = torch.stack(con, dim=1)
-    v = increased_obs_data[None, :, :, None].detach()
-    v = v.permute(0, 3, 1, 2)# v = torch.Size([1, 1, 8, 3])
-    a = generate_adjacency_matrix(v).squeeze(dim=0).detach()# a = (8,3,3) 
+    v = obs_data[None, :, :, None].detach()
+    v = v.permute(0, 3, 1, 2) # v => torch.Size([1, 1, 8, 3])
+    a = generate_adjacency_matrix(v).squeeze(dim=0).detach() # a => torch.Size([8,3,3])
     input_data = (v, a)
     return input_data
 
 
-def model_forward(input_data, baseline_model):
+def model_forward(input_data, baseline_model , addl_info=None):
     # Forward the baseline model with input data
-    output_data = baseline_model(*input_data)
+    feature = addl_info
+    output_data = baseline_model(*input_data , feature)
     return output_data
 
 

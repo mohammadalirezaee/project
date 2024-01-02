@@ -33,18 +33,29 @@ class ConvTemporalGraphical(nn.Module):
 
     def __init__(self, in_channels, out_channels, kernel_size, t_kernel_size=1, t_stride=1, t_padding=0, t_dilation=1, bias=True):
         super(ConvTemporalGraphical, self).__init__()
-        self.kernel_size = kernel_size
+        self.kernel_size = kernel_size # seq length
         self.conv = nn.Conv2d(in_channels, out_channels * kernel_size, kernel_size=(t_kernel_size, 1), padding=(t_padding, 0), stride=(t_stride, 1), dilation=(t_dilation, 1), bias=bias)
 
     def forward(self, x, A):
         assert A.size(0) == self.kernel_size
 
-        x = self.conv(x)
+        x = self.conv(x) #  torch.Size([1, 160, 8, 3])
         n, kc, t, v = x.size()
-        x = x.view(n, self.kernel_size, kc // self.kernel_size, t, v)
-        x = torch.einsum('nkctv,kvw->nctw', (x, A))
-
+        # Print the values
+        # print("x :first ", x.shape)
+        x = x.view(n, self.kernel_size, kc // self.kernel_size, t, v) # torch.Size([1, 8, 20, 8, 3])
+        # print("x :view ", x.shape)
+        x = torch.einsum('nkctv,kvw->nctw', (x, A)) # torch.Size([1, 20, 8, 3])
+        # print("x :einsum ", x.shape)
         return x.contiguous(), A
+
+class MLP(nn.Module):
+    def __init__(self, input_size, output_size):
+        super(MLP, self).__init__()
+        self.layers = nn.Linear(input_size, output_size)
+
+    def forward(self, x):
+        return self.layers(x)
 
 
 class st_gcn(nn.Module):
@@ -83,6 +94,7 @@ class st_gcn(nn.Module):
                                  nn.Conv2d(out_channels, out_channels, (kernel_size[0], 1), (stride, 1), padding,),
                                  nn.BatchNorm2d(out_channels),
                                  nn.Dropout(dropout, inplace=True),)
+        self.mlp = MLP(136, 8)
 
         if not residual:
             self.residual = lambda x: 0
@@ -96,16 +108,41 @@ class st_gcn(nn.Module):
 
         self.prelu = nn.PReLU()
 
-    def forward(self, x, A):
+    def forward(self, x, A , feature):
+
         res = self.residual(x)
         x, A = self.gcn(x, A)
 
+        feature = feature.view(1, 1, -1, 1)
+        feature = feature.expand(x.size(0), x.size(1), feature.size(2), x.size(3))
+        x = torch.cat([x, feature], dim=2) # torch.Size([1, 20, 136, 3])
+        # print(f'test after graph: shape is:{test.shape}')
+        # print(f'V after graph: shape is:{x.shape}') # torch.Size([1, 20, 8, 3])
+        # print(f'A after graph: shape is:{A.shape}') # torch.Size([8, 3, 3])
+        x = x.permute(0, 1, 3, 2)
+        # print(f'x before MLP: shape is:{x.shape}')
+        x = self.mlp(x)
+        x = x.permute(0, 1, 3, 2)
+        # print(f'x after MLP: shape is:{x.shape}')
         x = self.tcn(x) + res
-
         if not self.use_mdn:
             x = self.prelu(x)
 
         return x, A
+
+    # def forward(self, x, A , feature):
+    #     feature = feature.view(1, 1, -1, 1)
+    #     feature = feature.expand(x.size(0), x.size(1), feature.size(2), x.size(3))
+    #     x = torch.cat([x, feature], dim=2)
+        
+    #     res = self.residual(x)
+    #     x, A = self.gcn(x, A)
+    #     x = self.tcn(x) + res
+
+    #     if not self.use_mdn:
+    #         x = self.prelu(x)
+
+    #     return x, A
 
 
 class social_stgcnn(nn.Module):
@@ -129,9 +166,9 @@ class social_stgcnn(nn.Module):
         for j in range(self.n_txpcnn):
             self.prelus.append(nn.PReLU())
 
-    def forward(self, v, a):
+    def forward(self, v, a, feature ):
         for k in range(self.n_stgcnn):
-            v, a = self.st_gcns[k](v, a)
+            v, a = self.st_gcns[k](v, a, feature) # add feature to input please
 
         v = v.view(v.shape[0], v.shape[2], v.shape[1], v.shape[3])
 
