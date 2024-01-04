@@ -287,3 +287,5 @@ class TrajectoryDataset(Dataset):
         out = [self.obs_traj[start:end], self.pred_traj[start:end],
                self.non_linear_ped[start:end], self.loss_mask[start:end], [[0, end - start]], frames]
         return out 
+
+
