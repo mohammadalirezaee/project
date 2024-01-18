@@ -1,0 +1,5 @@
+D:/AmirKabir/tez/eighen filter=lfs diff=lfs merge=lfs -text
+D:/AmirKabir/tez/eighen filter=lfs diff=lfs merge=lfs -text
+D:/AmirKabir/tez/eighen[[:space:]]trajectory/project_git/project/project_gpu/datasets/biwi_eth_frames filter=lfs diff=lfs merge=lfs -text
+D:/AmirKabir/tez/eighen[[:space:]]trajectory/project_git/project/project_gpu/datasets filter=lfs diff=lfs merge=lfs -text
+datasets filter=lfs diff=lfs merge=lfs -text
