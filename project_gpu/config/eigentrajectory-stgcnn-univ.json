@@ -17,7 +17,7 @@
 	"pred_svd": true,
 	"baseline": "stgcnn",
 
-	"batch_size": 64,
+	"batch_size": 32,
 	"num_epochs": 128,
 	"lr": 0.001,
 	"weight_decay": 0.0001,
