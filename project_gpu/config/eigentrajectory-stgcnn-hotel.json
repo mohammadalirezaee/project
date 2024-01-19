@@ -2,7 +2,7 @@
 	"dataset_dir": "./datasets/",
 	"checkpoint_dir": "./checkpoints/",
 
-	"dataset": "eth",
+	"dataset": "hotel",
 	"traj_dim": 2,
 	"obs_len": 8,
 	"obs_step": 10,
@@ -17,8 +17,8 @@
 	"pred_svd": true,
 	"baseline": "stgcnn",
 
-	"batch_size": 4,
-	"num_epochs": 1,
+	"batch_size": 128,
+	"num_epochs": 256,
 	"lr": 0.001,
 	"weight_decay": 0.0001,
 	"clip_grad": 10,

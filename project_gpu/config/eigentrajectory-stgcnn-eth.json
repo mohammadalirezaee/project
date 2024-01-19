@@ -2,7 +2,7 @@
 	"dataset_dir": "./datasets/",
 	"checkpoint_dir": "./checkpoints/",
 
-	"dataset": "univ",
+	"dataset": "eth",
 	"traj_dim": 2,
 	"obs_len": 8,
 	"obs_step": 10,
@@ -11,11 +11,11 @@
 	"skip": 1,
 
 	"k": 6,
-	"static_dist": 0.227,
+	"static_dist": 0.419,
 	"num_samples": 20,
 	"obs_svd": true,
 	"pred_svd": true,
-	"baseline": "{baseline}",
+	"baseline": "stgcnn",
 
 	"batch_size": 128,
 	"num_epochs": 256,

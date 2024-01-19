@@ -91,12 +91,12 @@ class EigenTrajectory(nn.Module):
         # print(f'obs_ori_before(input to GCN): {obs_ori.shape}')
         obs_ori -= obs_ori.mean(dim=1, keepdim=True)  # move scene to origin
         lis = []
-        print(f'C_observation(input to GCN): {C_obs.shape}')
+        # print(f'C_observation(input to GCN): {C_obs.shape}')
         # print(f'C_observation(input to GCN): {features.shape}')
         print('******************')
-        print(type(addl_info)) # list
-        print(len(addl_info)) # 8
-        print(addl_info[0].shape) # torch.Size([300, 300, 3])
+        # print(type(addl_info)) # list
+        # print(len(addl_info)) # 8
+        # print(addl_info[0].shape) # torch.Size([300, 300, 3])
         # print(addl_info.shape)
         # print(addl_info[7].shape)
 
@@ -120,7 +120,7 @@ class EigenTrajectory(nn.Module):
         C_pred_refine = self.hook_func.model_forward_post_hook(output_data)
         lis.append(C_pred_refine)
         # print(len(lis))
-        print(f'C_pred(output of GCN): {C_pred_refine.shape}')
+        # print(f'C_pred(output of GCN): {C_pred_refine.shape}')
         # Anchor refinement
         C_m_pred = self.ET_m_anchor(C_pred_refine[:, mask])
         C_s_pred = self.ET_s_anchor(C_pred_refine[:, ~mask])
@@ -136,7 +136,7 @@ class EigenTrajectory(nn.Module):
         if pred_traj is not None:
             C_pred = torch.zeros((self.k, n_ped, self.s), dtype=torch.float, device=obs_traj.device)
             C_pred[:, mask], C_pred[:, ~mask] = C_m_pred, C_s_pred
-            print(f'C_prediction after refinment(add with trainable anchor points): {C_pred.shape}')
+            # print(f'C_prediction after refinment(add with trainable anchor points): {C_pred.shape}')
 
             # Low-rank approximation for gt trajectory
             C_pred_gt = torch.zeros((self.k, n_ped), dtype=torch.float, device=obs_traj.device)

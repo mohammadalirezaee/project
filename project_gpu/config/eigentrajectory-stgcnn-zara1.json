@@ -15,7 +15,7 @@
 	"num_samples": 20,
 	"obs_svd": true,
 	"pred_svd": true,
-	"baseline": "{baseline}",
+	"baseline": "stgcnn",
 
 	"batch_size": 128,
 	"num_epochs": 256,
