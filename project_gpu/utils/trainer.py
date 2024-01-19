@@ -163,8 +163,9 @@ class ETSequencedMiniBatchTrainer(ETTrainer):
         for cnt, batch in enumerate(tqdm(self.loader_val, desc=f'Valid Epoch {epoch}', mininterval=1)):
             device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
             obs_traj, pred_traj = [tensor.to(device, non_blocking=True) for tensor in batch[:2]]
+            frames = [torch.from_numpy(np.copy(sublist)).float().to(device, non_blocking=True) for sublist in batch[-1][0]]
 
-            output = self.model(obs_traj, pred_traj)
+            output = self.model(obs_traj, pred_traj , addl_info = frames)
 
             recon_loss = output["loss_euclidean_fde"] * obs_traj.size(0)
             loss_batch += recon_loss.item()
@@ -180,11 +181,11 @@ class ETSequencedMiniBatchTrainer(ETTrainer):
         for batch in tqdm(self.loader_test, desc=f"Test {self.hyper_params.dataset.upper()} scene"):
             device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
             obs_traj, pred_traj = [tensor.to(device, non_blocking=True) for tensor in batch[:2]]
-
+            frames = [torch.from_numpy(np.copy(sublist)).float().to(device, non_blocking=True) for sublist in batch[-1][0]]
             # Trajectory noise perturbation
             # obs_traj = obs_traj + torch.randn_like(obs_traj) * 0.10
 
-            output = self.model(obs_traj)
+            output = self.model(obs_traj, addl_info=frames)
 
             # Evaluate trajectories
             for metric in self.stats_func.keys():
