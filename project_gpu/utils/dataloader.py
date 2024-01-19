@@ -248,7 +248,7 @@ class TrajectoryDataset(Dataset):
                     num_peds_in_seq.append(num_peds_considered)
                     loss_mask_list.append(curr_loss_mask[:num_peds_considered])
                     seq_list.append(curr_seq[:num_peds_considered])
-                    frame_path = [video_path + 'frame_' + str(int(number)) + '.jpg' for number in frame_range][:8]
+                    frame_path = [video_path +'/' +'frame_' + str(int(number)) + '.jpg' for number in frame_range][:8]
                     temp = [plt.imread(path) for path in frame_path]
                     frame_list.append(temp)
                     frame_id.append(frame_range) #new add
