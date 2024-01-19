@@ -93,7 +93,7 @@ class EigenTrajectory(nn.Module):
         lis = []
         # print(f'C_observation(input to GCN): {C_obs.shape}')
         # print(f'C_observation(input to GCN): {features.shape}')
-        print('******************')
+        # print('******************')
         # print(type(addl_info)) # list
         # print(len(addl_info)) # 8
         # print(addl_info[0].shape) # torch.Size([300, 300, 3])
