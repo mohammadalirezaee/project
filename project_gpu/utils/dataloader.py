@@ -199,7 +199,7 @@ class TrajectoryDataset(Dataset):
 
         for path in all_file:
             splitted_path = path.split('/')
-            address_until_datasets = '/'.join(splitted_path[:8])
+            address_until_datasets = '/'.join(splitted_path[:2])
             videos_name = splitted_path[-1][:-4] + '_frames'
             frame_path = address_until_datasets + '/' + videos_name
 
