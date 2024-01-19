@@ -18,7 +18,7 @@
 	"baseline": "stgcnn",
 
 	"batch_size": 64,
-	"num_epochs": 256,
+	"num_epochs": 128,
 	"lr": 0.001,
 	"weight_decay": 0.0001,
 	"clip_grad": 10,
