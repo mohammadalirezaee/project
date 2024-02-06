@@ -65,9 +65,8 @@ class ETTrainer:
     def test(self):
         raise NotImplementedError
 
-def fit(self):
-    print("Training started...")
-    with open(self.checkpoint_dir + 'loss_log.txt', 'w') as loss_file:
+    def fit(self):
+        print("Training started...")
         for epoch in range(self.hyper_params.num_epochs):
             self.train(epoch)
             self.valid(epoch)
@@ -79,22 +78,20 @@ def fit(self):
             if epoch == 0 or self.log['val_loss'][-1] < min(self.log['val_loss'][:-1]):
                 self.save_model()
 
-            # Prepare the log message
-            log_message = (
-                f"\nDataset: {self.hyper_params.dataset}, Epoch: {epoch}\n"
-                f"Train_loss: {self.log['train_loss'][-1]:.8f}, Val_loss: {self.log['val_loss'][-1]:.8f}\n"
-                f"Min_val_epoch: {np.array(self.log['val_loss']).argmin()}, "
-                f"Min_val_loss: {np.array(self.log['val_loss']).min():.8f}\n"
-            )
+            print(" ")
+            print("Dataset: {0}, Epoch: {1}".format(self.hyper_params.dataset, epoch))
+            print("Train_loss: {0:.8f}, Val_los: {1:.8f}".format(self.log['train_loss'][-1], self.log['val_loss'][-1]))
+            print("Min_val_epoch: {0}, Min_val_loss: {1:.8f}".format(np.array(self.log['val_loss']).argmin(),
+                                                                     np.array(self.log['val_loss']).min()))
+            print(" ")
+            with open(self.checkpoint_dir + 'loss_log.txt', 'a') as loss_file:
+                print(f"Dataset: {self.hyper_params.dataset}, Epoch: {epoch}")
+                loss_file.write(f"Epoch: {epoch}, Train_loss: {self.log['train_loss'][-1]}, Val_loss: {self.log['val_loss'][-1]}\n")
+                print("Min_val_epoch: {0}, Min_val_loss: {1:.8f}".format(np.array(self.log['val_loss']).argmin(),
+                                                                     np.array(self.log['val_loss']).min()))
+                print(" ")
 
-            # Write to terminal
-            print(log_message)
-
-            # Write the same log message to file
-            loss_file.write(log_message)
-            loss_file.flush()  # Ensure it's written to disk after each epoch
-
-    print("Done.")
+        print("Done.")
 
     def reset_metric(self):
         self.stats_func = {'ADE': compute_batch_ade, 'FDE': compute_batch_fde,
