@@ -2,7 +2,7 @@ import torch
 import torch.nn as nn
 from .anchor import ETAnchor
 from .descriptor import ETDescriptor
-from .feature_extractor import modified_UNet , Modified_Res18
+from .feature_extractor import  Modified_Res18
 
 
 class EigenTrajectory(nn.Module):
