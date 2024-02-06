@@ -156,7 +156,7 @@ def poly_fit(traj, traj_len, threshold):
 def prepare_image(frame):
     transform = transforms.Compose([
                       transforms.ToPILImage(),
-                      transforms.Resize(300),
+                      transforms.Resize(224),
                       transforms.ToTensor()])
     transformed_image = transform(frame)
     transformed_image = transformed_image.unsqueeze(0)

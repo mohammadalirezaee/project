@@ -2,7 +2,7 @@ import torch
 import torch.nn as nn
 from .anchor import ETAnchor
 from .descriptor import ETDescriptor
-from .feature_extractor import modified_UNet
+from .feature_extractor import modified_UNet , Modified_Res18
 
 
 class EigenTrajectory(nn.Module):
@@ -27,7 +27,7 @@ class EigenTrajectory(nn.Module):
         self.dim = hyper_params.traj_dim
         self.static_dist = hyper_params.static_dist
 
-        self.Scene_features = modified_UNet() #new add
+        self.Scene_features = Modified_Res18() #new add
         self.ET_m_descriptor = ETDescriptor(hyper_params=hyper_params, norm_sca=True)
         self.ET_s_descriptor = ETDescriptor(hyper_params=hyper_params, norm_sca=False)
         self.ET_m_anchor = ETAnchor(hyper_params=hyper_params)
@@ -101,7 +101,7 @@ class EigenTrajectory(nn.Module):
         # print(addl_info[7].shape)
 
         features = self.Scene_features.forward(addl_info)#new add
-        # print(f'features: {features.shape}')
+        # print(f'features: {features.shape}') : torch.Size([1, 128])
         # con = [torch.cat([features, c], dim=0) for c in torch.transpose(C_obs, 0, 1)]
         # increased_C = torch.stack(con, dim=1)
         # print(f'increased_C: {increased_C.shape}')
