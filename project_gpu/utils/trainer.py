@@ -67,7 +67,7 @@ class ETTrainer:
 
     def fit(self):
         print("Training started...")
-        with open(self.checkpoint_dir + 'loss_log.txt', 'a') as loss_file:
+        with open('loss_log.txt', 'a') as loss_file:
                 loss_file.write(f"Dataset: {self.hyper_params.dataset}")
         for epoch in range(self.hyper_params.num_epochs):
             self.train(epoch)
@@ -94,7 +94,7 @@ class ETTrainer:
                 print(" ")
 
         print("Done.")
-        
+
         loss_values_file =  'loss_values.txt'
         with open(loss_values_file, 'w') as file:
             file.write("Epoch,Train Loss,Validation Loss\n")
