@@ -85,10 +85,10 @@ class ETTrainer:
                                                                      np.array(self.log['val_loss']).min()))
             print(" ")
             with open(self.checkpoint_dir + 'loss_log.txt', 'a') as loss_file:
-                print(f"Dataset: {self.hyper_params.dataset}, Epoch: {epoch}")
-                loss_file.write(f"Epoch: {epoch}, Train_loss: {self.log['train_loss'][-1]}, Val_loss: {self.log['val_loss'][-1]}\n")
-                print("Min_val_epoch: {0}, Min_val_loss: {1:.8f}".format(np.array(self.log['val_loss']).argmin(),
-                                                                     np.array(self.log['val_loss']).min()))
+                loss_file.write(f"Dataset: {self.hyper_params.dataset}, Epoch: {epoch}, ")
+                loss_file.write(f"Train_loss: {self.log['train_loss'][-1]:.8f}, Val_loss: {self.log['val_loss'][-1]:.8f}\n")
+                loss_file.write(f"Min_val_epoch: {np.array(self.log['val_loss']).argmin()}, ")
+                loss_file.write(f"Min_val_loss: {np.array(self.log['val_loss']).min():.8f}\n\n")
                 print(" ")
 
         print("Done.")
