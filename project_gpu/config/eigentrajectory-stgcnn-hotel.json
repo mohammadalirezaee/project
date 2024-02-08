@@ -18,7 +18,11 @@
 	"baseline": "stgcnn",
 
 	"batch_size": 32,
+<<<<<<< HEAD
 	"num_epochs": 10,
+=======
+	"num_epochs": 256,
+>>>>>>> ad273da5 (change)
 	"lr": 0.001,
 	"weight_decay": 0.0001,
 	"clip_grad": 10,
